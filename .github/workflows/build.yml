@@ -1,27 +1,76 @@
-name: Build AbstractFactory Example
+name: Build-Test-Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
   pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+      - name: Configure project
+        run: cmake -H. -B_build
 
-    - name: Configure CMake
-      run: cmake .
+      - name: Build project
+        run: cmake --build _build
 
-    - name: Build project
-      run: cmake --build .
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: _build/
 
-    - name: Run executable
-      run: ./AbstractFactory
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: _build/
+          
+      - name: Run executable
+        run: _build/AbstractFactory
+
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: _build/
+
+      - name: Create DEB package
+        run: |
+          cd _build
+          cpack -G DEB
+          mkdir _artifacts
+          mv *.deb _artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: "Automated release with .deb package for AbstractFactoryExample"
+          files: _build/_artifacts/*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
