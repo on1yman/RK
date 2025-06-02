@@ -3,4 +3,4 @@ project(AbstractFactoryExample)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(AbstractFactory src/AbstractFactory/Conceptual/AbstractFactory.cpp)
+add_executable(AbstractFactory src/AbstractFactory/Conceptual/main.cpp)
