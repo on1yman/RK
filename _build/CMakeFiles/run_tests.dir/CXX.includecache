@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/onlyman/on1yman/RK/src/AbstractFactory/Conceptual/main.cc
+iostream
+-
+string
+-
+
+/home/onlyman/on1yman/RK/tests/test_abstract_factory.cpp
+gtest/gtest.h
+-
+../src/AbstractFactory/Conceptual/main.cc
+/home/onlyman/on1yman/RK/src/AbstractFactory/Conceptual/main.cc
+
