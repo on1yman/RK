@@ -24,7 +24,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake libgtest-dev googletest
+          sudo apt-get install -y build-essential cmake libgtest-dev
+
+      - name: Build GTest
+        run: |
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp lib/*.a /usr/lib
 
       - name: Configure project
         run: cmake -S. -B${BUILD_DIR} -DCMAKE_BUILD_TYPE=Release
@@ -32,14 +39,18 @@ jobs:
       - name: Build project
         run: cmake --build ${BUILD_DIR} --config Release
 
+      - name: Verify build artifacts
+        run: |
+          ls -la ${BUILD_DIR}
+          test -f ${BUILD_DIR}/run_tests || exit 1
+          test -f ${BUILD_DIR}/AbstractFactory || exit 1
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build  # Изменено с build-artifacts на build
-          path: |
-            ${BUILD_DIR}/AbstractFactory
-            ${BUILD_DIR}/run_tests
-            ${BUILD_DIR}/CMakeCache.txt
+          name: build-artifacts
+          path: ${BUILD_DIR}/
+          retention-days: 1
 
   test:
     runs-on: ubuntu-latest
@@ -48,8 +59,13 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build  # Должно совпадать с именем при загрузке
+          name: build-artifacts
           path: ${BUILD_DIR}/
+
+      - name: Verify downloaded artifacts
+        run: |
+          ls -la ${BUILD_DIR}
+          test -f ${BUILD_DIR}/run_tests || exit 1
 
       - name: Run tests
         run: |
@@ -67,7 +83,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build  # Должно совпадать с именем при загрузке
+          name: build-artifacts
           path: ${BUILD_DIR}/
 
       - name: Install packaging tools
@@ -77,7 +93,7 @@ jobs:
         run: |
           mkdir -p ${ARTIFACTS_DIR}
           cd ${BUILD_DIR}
-          cpack -G DEB --config CPackConfig.cmake
+          cpack -G DEB
           mv *.deb ../${ARTIFACTS_DIR}/
 
       - name: Create GitHub Release
