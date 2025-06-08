@@ -44,10 +44,10 @@ jobs:
           name: build
           path: _build/
 
-      - name: Make executable and run it
+      - name: Run tests
         run: |
-          chmod +x _build/AbstractFactory
-          _build/AbstractFactory
+          cd _build
+          ctest --output-on-failure
 
   release:
     runs-on: ubuntu-latest
