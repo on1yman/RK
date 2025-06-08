@@ -35,7 +35,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: build  # Изменено с build-artifacts на build
           path: |
             ${BUILD_DIR}/AbstractFactory
             ${BUILD_DIR}/run_tests
@@ -48,7 +48,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build  # Должно совпадать с именем при загрузке
           path: ${BUILD_DIR}/
 
       - name: Run tests
@@ -67,7 +67,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build  # Должно совпадать с именем при загрузке
           path: ${BUILD_DIR}/
 
       - name: Install packaging tools
