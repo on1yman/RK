@@ -10,27 +10,16 @@ add_executable(AbstractFactory src/AbstractFactory/Conceptual/main.cc)
 # Настройка тестов
 enable_testing()
 
-# Вариант 1: Если GTest установлен в системе
-find_package(GTest REQUIRED)
-
-# Вариант 2: Если GTest не установлен - скачиваем автоматически
-if(NOT GTest_FOUND)
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/release-1.11.0.zip
-    )
-    FetchContent_MakeAvailable(googletest)
-endif()
+# Поиск Google Test
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/release-1.11.0.zip
+)
+FetchContent_MakeAvailable(googletest)
 
 add_executable(run_tests tests/test_abstract_factory.cpp)
-
-# Подключение GTest с проверкой, какой вариант используется
-if(GTest_FOUND)
-    target_link_libraries(run_tests GTest::GTest GTest::Main pthread)
-else()
-    target_link_libraries(run_tests gtest gtest_main pthread)
-endif()
+target_link_libraries(run_tests GTest::GTest GTest::Main pthread)
 
 add_test(NAME AbstractFactoryTests COMMAND run_tests)
 
@@ -40,10 +29,20 @@ install(TARGETS AbstractFactory
 )
 
 # Настройка CPack
-include(CPack)
 set(CPACK_PACKAGE_NAME "abstractfactory-example")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VENDOR "RK")
+set(CPACK_PACKAGE_CONTACT "onlyman")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Abstract Factory pattern example")
+
+# DEB-специфичные настройки
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "onlyman")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Abstract Factory pattern example app for RK")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/your/repo")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "")  # Зависимости, если нужны
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)  # Автоматически определять зависимости библиотек
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)  # Автоимя файла
+
+include(CPack)
