@@ -47,6 +47,9 @@ jobs:
           name: build
           path: _build/
 
+      - name: Make test executable
+        run: chmod +x _build/run_tests
+
       - name: Run tests
         run: |
           cd _build
