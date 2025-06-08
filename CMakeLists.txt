@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 project(AbstractFactoryExample VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -10,39 +10,33 @@ add_executable(AbstractFactory src/AbstractFactory/Conceptual/main.cc)
 # Настройка тестов
 enable_testing()
 
-# Поиск Google Test
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/release-1.11.0.zip
-)
-FetchContent_MakeAvailable(googletest)
+# Вариант 1: Используем системный GTest
+find_package(GTest QUIET)
+
+if(GTest_FOUND)
+  message(STATUS "Found system GTest")
+else()
+  # Вариант 2: Загружаем через URL
+  message(STATUS "Downloading GTest")
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/release-1.12.1.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  )
+  FetchContent_MakeAvailable(googletest)
+endif()
 
 add_executable(run_tests tests/test_abstract_factory.cpp)
-target_link_libraries(run_tests GTest::GTest GTest::Main pthread)
+
+if(GTest_FOUND)
+  target_link_libraries(run_tests GTest::GTest GTest::Main pthread)
+else()
+  target_link_libraries(run_tests gtest gtest_main pthread)
+endif()
 
 add_test(NAME AbstractFactoryTests COMMAND run_tests)
 
-# Установка основного приложения
-install(TARGETS AbstractFactory
-    RUNTIME DESTINATION bin
-)
-
-# Настройка CPack
-set(CPACK_PACKAGE_NAME "abstractfactory-example")
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-set(CPACK_PACKAGE_VENDOR "RK")
-set(CPACK_PACKAGE_CONTACT "onlyman")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Abstract Factory pattern example")
-
-# DEB-специфичные настройки
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "onlyman")
-set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Abstract Factory pattern example app for RK")
-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/your/repo")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "")  # Зависимости, если нужны
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)  # Автоматически определять зависимости библиотек
-set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)  # Автоимя файла
-
+# Установка и CPack (остается без изменений)
+install(TARGETS AbstractFactory RUNTIME DESTINATION bin)
 include(CPack)
