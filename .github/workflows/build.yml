@@ -47,9 +47,6 @@ jobs:
           name: build
           path: _build/
 
-      - name: Make test executable
-        run: chmod +x _build/run_tests
-
       - name: Run tests
         run: |
           cd _build
@@ -68,6 +65,11 @@ jobs:
         with:
           name: build
           path: _build/
+
+      - name: Install project before packaging
+        run: |
+          cd _build
+          cmake --install .
 
       - name: Create DEB package
         run: |
