@@ -4,10 +4,9 @@ project(AbstractFactoryExample VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 add_executable(AbstractFactory src/AbstractFactory/Conceptual/main.cc)
 
-# Добавляем googletest как подмодуль (если он у тебя в extern/googletest)
-add_subdirectory(extern/googletest)
 
 enable_testing()
 
@@ -15,6 +14,7 @@ add_executable(run_tests tests/test_abstract_factory.cpp)
 target_link_libraries(run_tests gtest gtest_main pthread)
 
 add_test(NAME AbstractFactoryTests COMMAND run_tests)
+
 
 install(TARGETS AbstractFactory
     RUNTIME DESTINATION bin
