@@ -8,6 +8,9 @@ on:
       - 'v*.*.*'
   pull_request:
 
+permissions:
+  contents: write  
+
 env:
   BUILD_DIR: _build
 
@@ -78,4 +81,4 @@ jobs:
           body: "Automated release with .deb package for AbstractFactoryExample"
           files: release-artifacts/*.deb
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
