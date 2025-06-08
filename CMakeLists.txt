@@ -6,15 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(AbstractFactory src/AbstractFactory/Conceptual/main.cc)
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+add_subdirectory(extern/googletest)
 
 enable_testing()
 
 add_executable(run_tests tests/test_abstract_factory.cpp)
-target_link_libraries(run_tests GTest::gtest_main pthread)
+target_link_libraries(run_tests gtest gtest_main pthread)
+
 add_test(NAME AbstractFactoryTests COMMAND run_tests)
 
+# Установка
 install(TARGETS AbstractFactory
     RUNTIME DESTINATION bin
 )
