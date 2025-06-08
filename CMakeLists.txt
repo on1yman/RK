@@ -14,8 +14,8 @@ option(BUILD_TESTING "Build tests" ON)
 
 if(BUILD_TESTING)
     enable_testing()
-    
-    # Загрузка GTest через FetchContent (предпочтительный способ)
+    find_package(Threads REQUIRED)
+
     message(STATUS "Configuring tests...")
     include(FetchContent)
     FetchContent_Declare(
@@ -24,17 +24,13 @@ if(BUILD_TESTING)
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
     FetchContent_MakeAvailable(googletest)
-    
-    if(NOT googletest_POPULATED)
-        message(FATAL_ERROR "Failed to fetch googletest!")
-    endif()
 
     add_executable(run_tests tests/test_abstract_factory.cpp)
     target_link_libraries(run_tests PRIVATE 
-        GTest::GTest 
-        GTest::Main 
+        gtest 
+        gtest_main 
         Threads::Threads)
-    
+
     add_test(NAME AbstractFactoryTests COMMAND run_tests)
 endif()
 
